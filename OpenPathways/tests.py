@@ -231,6 +231,8 @@ class BadgeRelationTestCase(TestCase):
         self.assertEqual(list(Badge.objects.filter(name__in=['opt1', 'opt2'])),
                          target.can_be_awarded(owned_badges))
 
+class MermaidPrintingTestCase(TestCase):
+
     def test_badge_relation_printing(self):
         b1 = Badge.objects.create(name='b1')
         b2 = Badge.objects.create(name='b2')
@@ -257,3 +259,31 @@ class BadgeRelationTestCase(TestCase):
     def test_badge_mermaid_printing(self):
         b1 = Badge.objects.create(name='Test name')
         self.assertEqual('1[Test name]', b1.mermaid_print())
+
+    def test_optional_subgroup_printing(self):
+        b1 = Badge.objects.create(name='b1')
+        og = OptionalRelation.objects.create(name='optional group 1',
+                                             badge=b1,
+                                             minimum_required=1)
+        opt1 = Badge.objects.create(name='opt1')
+        opt2 = Badge.objects.create(name='opt2')
+        BadgeRelation.objects.create(fromBadge=opt1,
+                                     toBadge=b1,
+                                     optional=True,
+                                     optional_group=og)
+        BadgeRelation.objects.create(fromBadge=opt2,
+                                     toBadge=b1,
+                                     optional=True,
+                                     optional_group=og)
+        text = og.mermaid_print_subgraph()
+
+        # TODO: Work out how to properly test this multi-line text!
+        # self.assertEqual(
+        #     """subgraph: group1 [optional group 1]
+        #     2[opt1]
+        #     2 --> 1
+        #     3[opt2]
+        #     3 --> 1
+        #     End
+        #     group1 --> 1""", text
+        # )

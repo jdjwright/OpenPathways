@@ -1,0 +1,26 @@
+<html>
+<head>
+    <title>Pathway</title>
+</head>
+
+<body>
+<div><h1>Pathway to secure {{ badge.name }}</h1></div>
+
+<div>
+    Badge declaration:
+    {{ badge.mermaid_print }}
+</div>
+<div>
+    Required relations:
+    {% for badge in required_children %}
+        {{ badge.mermaid_print }}
+    {% endfor %}
+</div>
+<div>
+    Optional relations:
+    {% for relation in optional_groups %}
+        {{ relation.mermaid_print_subgraph }}
+    {% endfor %}
+</div>
+</body>
+</html>

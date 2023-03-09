@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
+
 class Badge(models.Model):
     name = models.CharField(null=False,
                             max_length=100,
@@ -91,6 +92,23 @@ class OptionalRelation(models.Model):
                             max_length=100)
     badge = models.ForeignKey(Badge, on_delete=models.CASCADE)
     minimum_required = models.IntegerField()
+
+    def mermaid_print_subgraph(self):
+        """
+        Generates the markdown-like text that Mermaid needs to create this
+        optoinal badge in a group.
+        :return: String that can be printed.
+        """
+        text = ['subgraph: group' + str(self.id) + ' [' + self.name + ']', ]
+        relations = BadgeRelation.objects.filter(optional_group=self)
+
+        for relation in relations:
+            text.append(relation.fromBadge.mermaid_print())
+            text.append(relation.mermaid_print())
+
+        text.append('End')
+        text.append('group' + str(self.id) + " --> " + str(self.badge.id))
+        return text
 
 
 class BadgeRelation(models.Model):

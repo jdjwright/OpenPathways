@@ -3,3 +3,4 @@ from .models import *
 
 admin.site.register(Badge)
 admin.site.register(BadgeRelation)
+admin.site.register(OptionalRelation)

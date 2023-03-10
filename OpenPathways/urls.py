@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from views import *
-
+from OpenPathways.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('pathway/<int:badge_id>/', badgeView, name='badgeView')
+    path('badgeview/<int:badge_pk>/', badgeView),
+    path('badgeviewtest/', badgeView_test)
+
 ]

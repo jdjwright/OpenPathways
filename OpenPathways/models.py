@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils.html import mark_safe, format_html
+
 
 class Badge(models.Model):
     name = models.CharField(null=False,
@@ -60,6 +62,12 @@ class Badge(models.Model):
         else:
             return True
 
+    def __str__(self):
+        return self.name
+
+    def mermaid_callback_print(self):
+        return "click " + str(self.id) + " fake_callback" +str(self.id)
+
     def mermaid_print(self):
         return str(self.pk) + "[" + self.name + "]"
 
@@ -92,12 +100,37 @@ class OptionalRelation(models.Model):
     badge = models.ForeignKey(Badge, on_delete=models.CASCADE)
     minimum_required = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+
+    def mermaid_print_subgraph(self):
+        """
+        Generates the markdown-like text that Mermaid needs to create this
+        optoinal badge in a group.
+        :return: String that can be printed.
+        """
+        text = ['subgraph group' + str(self.id) + ' [' + self.name + ']\n', ]
+        relations = BadgeRelation.objects.filter(optional_group=self)
+
+        for relation in relations:
+            text.append(relation.fromBadge.mermaid_print())
+            text.append(relation.fromBadge.mermaid_callback_print())
+
+        text.append('end\n')
+        relation_text = format_html("group{} -. minimum {} required .-> {}", str(self.id), str(self.minimum_required), str(self.badge.id))
+        # text.append('group' + str(self.id) + mark_safe(" -. optional .-> ") + str(self.badge.id))
+        text.append(relation_text)
+        return text
+
 
 class BadgeRelation(models.Model):
     fromBadge = models.ForeignKey(Badge, on_delete=models.CASCADE, related_name='fromBadge')
     toBadge = models.ForeignKey(Badge, on_delete=models.CASCADE, related_name='toBadge')
     optional = models.BooleanField(default=False)
-    optional_group = models.ForeignKey(OptionalRelation, on_delete=models.SET_NULL, null=True)
+    optional_group = models.ForeignKey(OptionalRelation, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return str(self.fromBadge) + ' --> ' + str(self.toBadge)
 
     def save(self, *args, **kwargs):
         if self.optional:
@@ -107,6 +140,7 @@ class BadgeRelation(models.Model):
 
     def mermaid_print(self):
         if self.optional:
-            return str(self.fromBadge.pk) + " -. optional .-> " + str(self.toBadge.pk)
+
+            return format_html("{} -. optional .-> {}", str(self.fromBadge.pk), str(self.toBadge.pk))
         else:
-            return str(self.fromBadge.pk) + " --> " + str(self.toBadge.pk)
+            return format_html("{} --> {}", str(self.fromBadge.pk), str(self.toBadge.pk))

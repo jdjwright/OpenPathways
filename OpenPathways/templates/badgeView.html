@@ -1,0 +1,39 @@
+<html>
+<body>
+<pre class="mermaid">
+
+flowchart TB
+    {{ badge.mermaid_print }}
+    {{ badge.mermaid_callback_print }}
+
+    {% for badge in required_parents %}
+        {{ badge.mermaid_print }}
+        {{ badge.mermaid_callback_print }}
+    {% endfor %}
+
+    {% for relation in optional_groups %}
+        {% for line in relation.mermaid_print_subgraph  %}
+            {{ line }}
+        {% endfor %}
+    {% endfor %}
+    {% for relation in required_relations %}
+        {{  relation.mermaid_print }}
+    {% endfor %}
+</pre>
+<script type="module">
+    function fake_callback1(id) {
+        alert('A callback was triggered');
+    }
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+    const config = {
+        startOnLoad: true,
+        flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'cardinal' },
+        securityLevel: 'loose',
+    };
+
+    mermaid.initialize(config);
+
+</script>
+</body>
+</html>

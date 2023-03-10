@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from models import Badge, OptionalRelation
+from OpenPathways.models import Badge, OptionalRelation, BadgeRelation
 
 
 def badgeView(request, badge_pk):
@@ -10,6 +10,17 @@ def badgeView(request, badge_pk):
     # 5 Repeat 2-4 for parents
 
     badge = get_object_or_404(Badge, pk=badge_pk)
-    required_children = badge.get_children(include_optional=False)
+    required_parents = badge.get_parents(include_optional=False)
+    required_relations = BadgeRelation.objects.filter(toBadge=badge, optional=False)
+
     optional_groups = OptionalRelation.objects.filter(badge=badge)
 
+
+    return render(request, 'badgeView.html', {'badge': badge,
+                                              'required_parents': required_parents,
+                                              'optional_groups': optional_groups,
+                                              'required_relations': required_relations})
+
+def badgeView_test(request):
+
+    return render(request, 'badgeView_test.html', {})

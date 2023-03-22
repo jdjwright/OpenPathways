@@ -2,7 +2,7 @@ import React from 'react';
 import {Button, FormGroup, Input, Label, Form} from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const BadgeForm = function({selectedBadge, setBadge, badges}) {
+const BadgeForm = function({selectedBadge, setBadge, badges, setBadges}) {
     const handleClick = function() {
         const badge = badges.find(badge => badge.id === selectedBadge)
         setBadge(prevState => ({
@@ -11,7 +11,7 @@ const BadgeForm = function({selectedBadge, setBadge, badges}) {
         }));
     };
     const handleNameChange = (event) =>{
-        setBadge(prevState => ({
+        setBadges(prevState => ({
             ...prevState,
             name: event.target.value
         }))

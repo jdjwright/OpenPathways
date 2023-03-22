@@ -5,7 +5,6 @@ import {ListGroup, ListGroupItem} from "reactstrap";
 const BadgeList = function({badges, setSelectedBadge}) {
     const handleClick = function(badgeID) {
         const badge = badges.find(badge => badge.id === badgeID)
-        console.log(badge + ' clicked')
         setSelectedBadge(prevState => ({
             ...prevState,
             name: badge.name,

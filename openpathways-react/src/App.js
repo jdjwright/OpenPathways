@@ -11,8 +11,7 @@ const App = function() {
         name: '',
         description: ''
     });
-    const badges = [
-        {
+    const initialBadges = [{
             id: 1,
             name: 'First badge',
             description: 'The first badge issued',
@@ -33,7 +32,8 @@ const App = function() {
             name: 'Fourth badge',
             description: 'The fourth badge issued'
         },
-    ];
+        ]
+    const [badges, setBadges] = useState(initialBadges);
     return (
         <div>
             <Container>
@@ -43,7 +43,8 @@ const App = function() {
                     </Col>
                     <Col xs='4'>
                         <BadgeForm selectedBadge={selectedBadge} setBadge={setSelectedBadge}
-                        badges={badges} />
+                        badges={badges}
+                        setBadges={setBadges}/>
                     </Col>
                 </Row>
             </Container>

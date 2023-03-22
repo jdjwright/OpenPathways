@@ -39,10 +39,11 @@ const App = function() {
             <Container>
                 <Row xs='2'>
                     <Col xs='8'>
-                        <BadgeList badges={badges} setSelectedBadge={setSelectedBadge}/>
+                        <BadgeList badges={badges} setSelectedBadge={setSelectedBadge} />
                     </Col>
                     <Col xs='4'>
-                        <BadgeForm selectedBadge={selectedBadge} setBadge={setSelectedBadge}/>
+                        <BadgeForm selectedBadge={selectedBadge} setBadge={setSelectedBadge}
+                        badges={badges} />
                     </Col>
                 </Row>
             </Container>

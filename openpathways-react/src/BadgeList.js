@@ -3,13 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {ListGroup, ListGroupItem} from "reactstrap";
 
 const BadgeList = function({badges, setSelectedBadge}) {
-    const handleClick = function(item) {
-        const badgeID = item.currentTarget.id
-        console.log(badgeID + ' clicked')
+    const handleClick = function(badgeID) {
+        const badge = badges.find(badge => badge.id === badgeID)
+        console.log(badge + ' clicked')
         setSelectedBadge(prevState => ({
             ...prevState,
-            name: 'New badge' + badgeID,
-            description: 'You clicked the button'
+            name: badge.name,
+            description: badge.description
         }))
     };
 
@@ -21,7 +21,9 @@ const BadgeList = function({badges, setSelectedBadge}) {
                 { badges.map(badge =>
                     <ListGroupItem
                         key={badge.id}
-                        onClick={handleClick}
+                        onClick={() => {
+                            handleClick(badge.id);
+                        }}
                         id={'badge_item' + badge.id}>
                         {badge.name}
                     </ListGroupItem>

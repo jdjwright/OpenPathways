@@ -2,14 +2,9 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {ListGroup, ListGroupItem} from "reactstrap";
 
-const BadgeList = function({badges, setSelectedBadge}) {
+const BadgeList = function({badges, setSelectedBadgeID}) {
     const handleClick = function(badgeID) {
-        const badge = badges.find(badge => badge.id === badgeID)
-        setSelectedBadge(prevState => ({
-            ...prevState,
-            name: badge.name,
-            description: badge.description
-        }))
+        setSelectedBadgeID(badgeID)
     };
 
 
@@ -28,6 +23,7 @@ const BadgeList = function({badges, setSelectedBadge}) {
                     </ListGroupItem>
                 )}
             </ListGroup>
+
         </div>
     );
 };

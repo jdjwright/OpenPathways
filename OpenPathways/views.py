@@ -1,5 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from OpenPathways.models import Badge, OptionalRelation, BadgeRelation
+from rest_framework import viewsets
+from .serializers import BadgeSerializer
 
 
 def badgeView(request, badge_pk):
@@ -24,3 +26,7 @@ def badgeView(request, badge_pk):
 def badgeView_test(request):
 
     return render(request, 'badgeView_test.html', {})
+
+class BadgeAPIView(viewsets.ModelViewSet):
+    serializer_class = BadgeSerializer
+    queryset = Badge.objects.all()

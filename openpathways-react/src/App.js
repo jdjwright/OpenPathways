@@ -5,6 +5,7 @@ import BadgeForm from "./BadgeForm";
 import BadgeList from './BadgeList'
 import {Container, Row, Col} from 'reactstrap';
 import axios from "axios";
+import {BadgeFlow, MapBadgesToNodes} from "./BadgeFlow";
 
 
 const App = function() {
@@ -16,21 +17,26 @@ const App = function() {
         },
         {
             id: 2,
-            name: 'First badge',
-            description: 'The first badge issued',
+            name: 'Second badge',
+            description: 'The second badge issued',
 
         },
         ]
+
+
+    const [badges, setBadges] = useState(initialBadges);
+    const intermediate_test_nodes = MapBadgesToNodes(initialBadges)
+    const [nodes, setNodes] = useState(intermediate_test_nodes);
     React.useEffect(() => {
         axios
             .get("http://localhost:8000/api/badge/")
             .then((response) => {
                 setBadges(response.data)
             })
-    }, [])
-    const [badges, setBadges] = useState(initialBadges);
+        setNodes(MapBadgesToNodes(badges))
+    }, [badges])
     const firstID = badges[0].id
-    const [selectedBadgeID, setSelectedBadgeID] = useState(firstID);
+    const [selectedBadgeID, setSelectedBadgeID] = useState(firstID)
     return (
         <div>
             <Container>
@@ -49,6 +55,7 @@ const App = function() {
 
                     </Col>
                 </Row>
+                <BadgeFlow nodes={nodes} />
             </Container>
         </div>
         );

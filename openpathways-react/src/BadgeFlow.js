@@ -1,12 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import ReactFlow from 'reactflow';
 
 import 'reactflow/dist/style.css';
 
-const initialNodes = [
-    { id: '1', position: { x: 0, y: 0 }, data: { label: 'badge 1' } },
-    { id: '2', position: { x: 0, y: 100 }, data: { label: 'badge 2' } },
-];
 const initialEdges = [{ id: '4', source: '1', target: '2' , label: 'optional'}];
 
 export  function BadgeFlow(nodes) {
@@ -22,8 +18,15 @@ export  function BadgeFlow(nodes) {
 
 export function MapBadgesToNodes(badges)  {
     return badges.map((badge, index) => {
+        let badge_id = 'undef'
+        try{
+            badge_id = badge.id.toString()
+        }
+        catch (err) {
+            badge_id = 'gen_' + index.toString()
+        }
         return {
-            id: badge.id.toString(),
+            id: badge_id,
             position: { x: 0, y: index * 100 },
             data: { label: badge.name}
         };

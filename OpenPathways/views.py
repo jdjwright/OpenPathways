@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from OpenPathways.models import Badge, OptionalRelation, BadgeRelation
 from rest_framework import viewsets
+from rest_framework.response import Response
 from .serializers import BadgeSerializer
 
 
@@ -17,7 +18,6 @@ def badgeView(request, badge_pk):
 
     optional_groups = OptionalRelation.objects.filter(badge=badge)
 
-
     return render(request, 'badgeView.html', {'badge': badge,
                                               'required_parents': required_parents,
                                               'optional_groups': optional_groups,
@@ -27,6 +27,13 @@ def badgeView_test(request):
 
     return render(request, 'badgeView_test.html', {})
 
+
 class BadgeAPIView(viewsets.ModelViewSet):
     serializer_class = BadgeSerializer
     queryset = Badge.objects.all()
+
+    def related(self, request, badge_pk=None):
+        badge = Badge.objects.get(pk=badge_pk)
+        badges = badge.get_related_badges()
+        serializer = BadgeSerializer(badges)
+        return Response(serializer.data)

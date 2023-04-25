@@ -25,16 +25,17 @@ const App = function() {
 
 
     const [badges, setBadges] = useState(initialBadges);
-    const intermediate_test_nodes = MapBadgesToNodes(initialBadges)
-    const [nodes, setNodes] = useState(intermediate_test_nodes);
+    const [refreshVersion, setRefreshVersion] = useState(1)
+    const nodes = MapBadgesToNodes(badges)
+
     React.useEffect(() => {
         axios
             .get("http://localhost:8000/api/badge/")
             .then((response) => {
                 setBadges(response.data)
             })
-        setNodes(MapBadgesToNodes(badges))
-    }, [badges])
+        console.log('Loaded badges')
+    }, [refreshVersion])
     const firstID = badges[0].id
     const [selectedBadgeID, setSelectedBadgeID] = useState(firstID)
     return (
@@ -46,8 +47,11 @@ const App = function() {
                     </Col>
                     <Col xs='4'>
                         <BadgeForm selectedBadgeID={selectedBadgeID}
+                        setSelectedBadgeID={setSelectedBadgeID}
                         badges={badges}
-                        setBadges={setBadges}/>
+                        setBadges={setBadges}
+                        refreshVersion={refreshVersion}
+                        setRefreshVersion={setRefreshVersion}/>
                     </Col>
                 </Row>
                 <Row>

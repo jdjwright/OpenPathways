@@ -1,25 +1,52 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {Button, FormGroup, Input, Label, Form} from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from "axios";
 
-const BadgeForm = function({selectedBadgeID, badges, setBadges}) {
+const BadgeForm = function({selectedBadgeID, setSelectedBadgeID, badges, setBadges, refreshVersion, setRefreshVersion}) {
     const [canAdd, setCanAdd] = useState(true)
-    const selectedBadge = badges.find(badge =>
+    const ref = useRef(null);
+    let selectedBadge = badges.find(badge =>
         badge.id === selectedBadgeID
     )
+    if (selectedBadge===undefined) {
+        let badge = {};
+        badge.id = 'Undef';
+        badge.name = '';
+        badge.description = '';
+        selectedBadge = badge;
+    }
 
     const handleSaveClick =(badge) => {
-        alert("save" + JSON.stringify(badge))
-        if (!badge.id) {
+        if(badge.id === 'new') {
+            axios
+                .post(`http://localhost:8000/api/badge/`, badge)
+                .then(() => setRefreshVersion(refreshVersion+1))
             setCanAdd(true);
+            return;
         }
+        axios
+            .put(`http://localhost:8000/api/badge/${badge.id}/`, badge)
+            .then(() => setRefreshVersion(refreshVersion+1))
+
     }
     const handleDeleteClick =(badge) => {
-        alert("delete" + JSON.stringify(badge))
+        if(badge.id === 'new') {
+            setRefreshVersion(refreshVersion+1)
+            setCanAdd(true);
+            return;
+        }
+        axios
+            .delete(`http://localhost:8000/api/badge/${badge.id}/`, badge)
+            .then(() => setRefreshVersion(refreshVersion+1))
+
     }
+
     const handleAddItem = () => {
         setCanAdd(false);
-        setBadges([...badges, {name: 'New badge', description: ''}])
+        setBadges([...badges, {name: 'New badge', description: '', id: 'new'}])
+        setSelectedBadgeID('new')
+        ref.current.focus()
     }
     const handleNameChange = (id, e) =>{
         setBadges(badges.map(badge => {
@@ -58,10 +85,12 @@ const BadgeForm = function({selectedBadgeID, badges, setBadges}) {
                         Badge Name
                     </Label>
                     <Input
+                        ref={ref}
                         id='badgeName'
                         name='name'
-                        placeholder="Enter a name for your badge"
+                        placeholder="Click a badge or press 'add badge"
                         value={selectedBadge.name}
+                        defaultValue="No badge selected"
                         type='text'
                         onChange={e => {
                             handleNameChange(selectedBadge.id, e)
@@ -75,7 +104,8 @@ const BadgeForm = function({selectedBadgeID, badges, setBadges}) {
                     <Input
                         id='badgeDescription'
                         name='Description'
-                        placeholder="Enter a name for your badge"
+                        placeholder="Enter a description for your badge"
+                        defaultValue="No badge selected"
                         value={selectedBadge.description}
                         type='textarea'
                         onChange={e => {

@@ -74,6 +74,32 @@ class Badge(models.Model):
     def mermaid_print_optional(self):
         return str(self.pk) + "(" + self.name + ")"
 
+    def get_related_badges_ids(self, include_ancestors=True, include_descendants=True):
+        """
+        Returns all badges that are in a 'lineage' containing this badge
+        This will return all children, grandchildren, parents, grandparents etc..
+        :return:
+        """
+        related_badges = [self.id]
+        if include_ancestors:
+            for badge in self.get_parents():
+                if badge.id in related_badges:
+                    continue
+                related_badges.append(badge.id)
+                other_ancestors = badge.get_related_badges_ids(include_descendants=False)
+                related_badges += other_ancestors
+
+        if include_descendants:
+            for badge in self.get_children():
+                if badge.id in related_badges:
+                    continue
+                related_badges.append(badge.id)
+                other_ancestors = badge.get_related_badges_ids(include_ancestors=False)
+                related_badges += other_ancestors
+        return related_badges
+
+    def get_related_badges(self):
+        return Badge.objects.filter(id__in=self.get_related_badges_ids()).distinct().order_by('id')
 
 class OptionalRelation(models.Model):
     """

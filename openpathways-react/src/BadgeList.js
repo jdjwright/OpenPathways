@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {ListGroup, ListGroupItem} from "reactstrap";
+import {ListGroup, ListGroupItem, Button} from "reactstrap";
 
 const BadgeList = function({badges, setSelectedBadgeID}) {
     const handleClick = function(badgeID) {

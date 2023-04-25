@@ -231,6 +231,28 @@ class BadgeRelationTestCase(TestCase):
         self.assertEqual(list(Badge.objects.filter(name__in=['opt1', 'opt2'])),
                          target.can_be_awarded(owned_badges))
 
+    def test_related_badges(self):
+        #  b1
+        #  b2  b3
+        #  b4
+
+        b1 = Badge.objects.create(name='b1')
+        b2 = Badge.objects.create(name='b2')
+        b3 = Badge.objects.create(name='b3')
+        b4 = Badge.objects.create(name='b4')
+        b5 = Badge.objects.create(name='irrelevant') # check this doens't appear!
+
+        BadgeRelation.objects.create(fromBadge=b1, toBadge=b2, optional=False)
+        BadgeRelation.objects.create(fromBadge=b2, toBadge=b4, optional=False)
+        BadgeRelation.objects.create(fromBadge=b3, toBadge=b4, optional=False)
+        # We should only have 1, 2 and 4, since 3 is required for 4 but not in the
+        # lineage of b1 (it's not a child).
+        self.assertQuerysetEqual(Badge.objects.filter(name__in=['b1', 'b2', 'b4']).order_by('id'), b1.get_related_badges())
+
+        # All badges should appear for 4, since it has every badge in its lineage
+        self.assertQuerysetEqual(Badge.objects.filter(name__in=['b1', 'b2', 'b3','b4']).order_by('id'), b4.get_related_badges())
+
+
 class MermaidPrintingTestCase(TestCase):
 
     def test_badge_relation_printing(self):

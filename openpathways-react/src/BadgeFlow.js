@@ -3,14 +3,13 @@ import ReactFlow from 'reactflow';
 
 import 'reactflow/dist/style.css';
 
-const initialEdges = [{ id: '4', source: '1', target: '2' , label: 'optional'}];
+export  function BadgeFlow({nodes, edges}) {
 
-export  function BadgeFlow(nodes) {
-    console.log(nodes.nodes)
-
+    console.log("In BadgeFlow, edges are:")
+    console.log(edges)
     return (
         <div style={{width: '100vw', height: '100vh'}}>
-            <ReactFlow nodes={nodes.nodes}/>
+            <ReactFlow nodes={nodes} edges={edges}/>
         </div>
     );
 
@@ -32,3 +31,30 @@ export function MapBadgesToNodes(badges)  {
         };
     });
 };
+
+export function MapBadgesToEdges(badges) {
+
+    let edges = []
+    badges.forEach((badge) => {
+            // if(badge.child_relations) {
+            //     badge.child_relations.map((relation) => {
+            //         edges = [...edges, {id: relation.id, source: relation.from, target: relation.to}]
+            //     })
+            // }
+            if (badge.child_relations) {
+                if (badge.child_relations.length > 0) {
+                    badge.child_relations.map((relation) => {
+                        edges = [...edges, {
+                            id: relation.relation.toString(),
+                            source: relation.from.toString(),
+                            target: relation.to.toString()}]
+                    })
+                }
+            } else {
+                return [{id: 1, to: 1, from: 2}, {id: 2, to: 1, from: 2}]
+            }
+        })
+
+    return edges
+    //return [{id: '1', target: '2', source: '1'}]
+}

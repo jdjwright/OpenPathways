@@ -22,12 +22,24 @@ class Badge(models.Model):
         return parents
 
     def get_children(self, include_optional=True):
-        relations = BadgeRelation.objects.filter(fromBadge=self)
+        relations = BadgeRelation.objects.filter(fromBadge=self).distinct()
 
         if not include_optional:
             relations = relations.filter(optional=False)
         children = Badge.objects.filter(toBadge__in=relations)
         return children
+
+    def get_child_relation_list(self):
+        relations = BadgeRelation.objects.filter(fromBadge=self).distinct()
+        list = []
+        for relation in relations:
+            list.append({
+                'from': self.id,
+                'to': relation.toBadge.id,
+                'optional': relation.optional,
+                'relation': relation.id
+            })
+        return list
 
     def can_be_awarded(self, previous_badges):
         """
@@ -98,8 +110,9 @@ class Badge(models.Model):
                 related_badges += other_ancestors
         return related_badges
 
-    def get_related_badges(self):
-        return Badge.objects.filter(id__in=self.get_related_badges_ids()).distinct().order_by('id')
+    def get_related_badges(self, include_ancestors=True, include_descendants=True):
+        return Badge.objects.filter(id__in=self.get_related_badges_ids(include_ancestors, include_descendants)).distinct().order_by('id')
+
 
 class OptionalRelation(models.Model):
     """

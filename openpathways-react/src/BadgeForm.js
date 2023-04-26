@@ -1,23 +1,33 @@
 import React, {useState, useRef} from 'react';
-import {Button, FormGroup, Input, Label, Form} from 'reactstrap';
+import {Button, FormGroup, Input, Label, Form, FormFeedback} from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
 
 const BadgeForm = function({selectedBadgeID, setSelectedBadgeID, badges, setBadges, refreshVersion, setRefreshVersion}) {
     const [canAdd, setCanAdd] = useState(true)
+    const [nameError, setNameError] = useState()
+    const [descriptionError, setDescriptionError] = useState()
     const ref = useRef(null);
     let selectedBadge = badges.find(badge =>
         badge.id === selectedBadgeID
     )
     if (selectedBadge===undefined) {
-        let badge = {};
-        badge.id = 'Undef';
-        badge.name = '';
-        badge.description = '';
-        selectedBadge = badge;
+        selectedBadge= {id: 'undef', name: '', description:''};
     }
 
-    const handleSaveClick =(badge) => {
+    const handleSaveClick = (badge, setNameError, setDescriptionError) => {
+        // Test if name and description are blank:
+        if (!badge.name || !badge.description) {
+            if (!badge.name) {
+                setNameError('Must set a name')
+            }
+            if (!badge.description) {
+                setDescriptionError('Must set a description')
+            }
+            return;
+        }
+        setNameError(false)
+        setDescriptionError(false)
         if(badge.id === 'new') {
             axios
                 .post(`http://localhost:8000/api/badge/`, badge)
@@ -87,15 +97,18 @@ const BadgeForm = function({selectedBadgeID, setSelectedBadgeID, badges, setBadg
                     <Input
                         ref={ref}
                         id='badgeName'
+                        invalid={nameError}
                         name='name'
                         placeholder="Click a badge or press 'add badge"
                         value={selectedBadge.name}
-                        defaultValue="No badge selected"
                         type='text'
                         onChange={e => {
                             handleNameChange(selectedBadge.id, e)
                         }}
                     />
+                    <FormFeedback>
+                        {nameError}
+                    </FormFeedback>
                 </FormGroup>
                 <FormGroup>
                     <Label for='badgeDescription'>
@@ -104,14 +117,15 @@ const BadgeForm = function({selectedBadgeID, setSelectedBadgeID, badges, setBadg
                     <Input
                         id='badgeDescription'
                         name='Description'
+                        invalid={descriptionError}
                         placeholder="Enter a description for your badge"
-                        defaultValue="No badge selected"
                         value={selectedBadge.description}
                         type='textarea'
                         onChange={e => {
                             handleDescriptionChange(selectedBadge.id, e)
                         }}
                     />
+                    <FormFeedback>{descriptionError}</FormFeedback>
                 </FormGroup>
                 <Button
                     color='primary'
@@ -122,7 +136,7 @@ const BadgeForm = function({selectedBadgeID, setSelectedBadgeID, badges, setBadg
                 </Button>
                 <Button
                     color='success'
-                    onClick={() => handleSaveClick(selectedBadge)}>
+                    onClick={() => handleSaveClick(selectedBadge,  setNameError, setDescriptionError)}>
                     Save badge
                 </Button>
                 <Button

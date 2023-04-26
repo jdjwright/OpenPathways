@@ -5,7 +5,7 @@ import BadgeForm from "./BadgeForm";
 import BadgeList from './BadgeList'
 import {Container, Row, Col} from 'reactstrap';
 import axios from "axios";
-import {BadgeFlow, MapBadgesToNodes} from "./BadgeFlow";
+import {BadgeFlow, MapBadgesToEdges, MapBadgesToNodes} from "./BadgeFlow";
 
 
 const App = function() {
@@ -27,6 +27,7 @@ const App = function() {
     const [badges, setBadges] = useState(initialBadges);
     const [refreshVersion, setRefreshVersion] = useState(1)
     const nodes = MapBadgesToNodes(badges)
+    const edges = MapBadgesToEdges(badges)
 
     React.useEffect(() => {
         axios
@@ -34,10 +35,11 @@ const App = function() {
             .then((response) => {
                 setBadges(response.data)
             })
-        console.log('Loaded badges')
     }, [refreshVersion])
     const firstID = badges[0].id
     const [selectedBadgeID, setSelectedBadgeID] = useState(firstID)
+    console.log('In app, edges are:')
+    console.log(edges)
     return (
         <div>
             <Container>
@@ -59,7 +61,9 @@ const App = function() {
 
                     </Col>
                 </Row>
-                <BadgeFlow nodes={nodes} />
+
+                <BadgeFlow nodes={nodes}
+                           edges={edges} />
             </Container>
         </div>
         );

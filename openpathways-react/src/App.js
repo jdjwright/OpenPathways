@@ -30,8 +30,6 @@ const App = function() {
     const [refreshVersion, setRefreshVersion] = useState(1)
     const [nodes, setNodes] = useState(MapBadgesToNodes(badges))
     const [edges, setEdges] = useState(MapBadgesToEdges(badges))
-    const onNodesChange = useCallback( (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),[] );
-    const onEdgesChange = useCallback( (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),[] );
 
 
 
@@ -71,9 +69,9 @@ const App = function() {
                 </Row>
 
                 <BadgeFlow nodes={nodes}
-                           onNodesChange={onNodesChange}
+                           setNodes={setNodes}
                            edges={edges}
-                           onEdgesChange={onEdgesChange} />
+                           setEdges={setEdges} />
             </Container>
         </div>
         );

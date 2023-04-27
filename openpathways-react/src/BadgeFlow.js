@@ -1,9 +1,13 @@
 import React from 'react';
-import ReactFlow from 'reactflow';
+import ReactFlow, { applyEdgeChanges, applyNodeChanges } from 'reactflow';
 
 import 'reactflow/dist/style.css';
+import {useCallback} from "react";
 
-export  function BadgeFlow({nodes, onNodesChange, edges, onEdgesChange}) {
+export  function BadgeFlow({nodes, setNodes, edges, setEdges}) {
+
+    const onNodesChange = useCallback( (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),[] );
+    const onEdgesChange = useCallback( (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),[] );
 
     console.log("In BadgeFlow, edges are:")
     console.log(edges)

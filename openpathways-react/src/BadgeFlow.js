@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactFlow, { applyEdgeChanges, applyNodeChanges } from 'reactflow';
+import ReactFlow, { applyEdgeChanges, applyNodeChanges, addEdge } from 'reactflow';
 
 import 'reactflow/dist/style.css';
 import {useCallback} from "react";
@@ -8,14 +8,17 @@ export  function BadgeFlow({nodes, setNodes, edges, setEdges}) {
 
     const onNodesChange = useCallback( (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),[] );
     const onEdgesChange = useCallback( (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),[] );
+    const onConnect = useCallback((params) => {
+        setEdges((eds) => addEdge(params, eds))
+        console.log(params)
+    }, [setEdges]);
 
-    console.log("In BadgeFlow, edges are:")
-    console.log(edges)
     return (
         <div style={{width: '100vw', height: '100vh'}}>
             <ReactFlow nodes={nodes} edges={edges}
             onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}/>
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}/>
         </div>
     );
 

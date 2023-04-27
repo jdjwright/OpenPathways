@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import BadgeForm from "./BadgeForm";
@@ -6,8 +6,6 @@ import BadgeList from './BadgeList'
 import {Container, Row, Col} from 'reactstrap';
 import axios from "axios";
 import {BadgeFlow, MapBadgesToEdges, MapBadgesToNodes} from "./BadgeFlow";
-import { applyEdgeChanges, applyNodeChanges } from 'reactflow';
-
 
 
 const App = function() {
@@ -44,8 +42,9 @@ const App = function() {
     }, [refreshVersion])
     const firstID = badges[0].id
     const [selectedBadgeID, setSelectedBadgeID] = useState(firstID)
-    console.log('In app, edges are:')
-    console.log(edges)
+    if(refreshVersion===1) {
+        setRefreshVersion(2)
+    }
     return (
         <div>
             <Container>

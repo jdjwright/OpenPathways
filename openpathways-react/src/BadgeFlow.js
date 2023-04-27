@@ -3,13 +3,15 @@ import ReactFlow from 'reactflow';
 
 import 'reactflow/dist/style.css';
 
-export  function BadgeFlow({nodes, edges}) {
+export  function BadgeFlow({nodes, onNodesChange, edges, onEdgesChange}) {
 
     console.log("In BadgeFlow, edges are:")
     console.log(edges)
     return (
         <div style={{width: '100vw', height: '100vh'}}>
-            <ReactFlow nodes={nodes} edges={edges}/>
+            <ReactFlow nodes={nodes} edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}/>
         </div>
     );
 

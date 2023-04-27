@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import BadgeForm from "./BadgeForm";
@@ -6,6 +6,8 @@ import BadgeList from './BadgeList'
 import {Container, Row, Col} from 'reactstrap';
 import axios from "axios";
 import {BadgeFlow, MapBadgesToEdges, MapBadgesToNodes} from "./BadgeFlow";
+import { applyEdgeChanges, applyNodeChanges } from 'reactflow';
+
 
 
 const App = function() {
@@ -26,14 +28,20 @@ const App = function() {
 
     const [badges, setBadges] = useState(initialBadges);
     const [refreshVersion, setRefreshVersion] = useState(1)
-    const nodes = MapBadgesToNodes(badges)
-    const edges = MapBadgesToEdges(badges)
+    const [nodes, setNodes] = useState(MapBadgesToNodes(badges))
+    const [edges, setEdges] = useState(MapBadgesToEdges(badges))
+    const onNodesChange = useCallback( (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),[] );
+    const onEdgesChange = useCallback( (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),[] );
+
+
 
     React.useEffect(() => {
         axios
             .get("http://localhost:8000/api/badge/")
             .then((response) => {
                 setBadges(response.data)
+                setNodes(MapBadgesToNodes(badges))
+                setEdges(MapBadgesToEdges(badges))
             })
     }, [refreshVersion])
     const firstID = badges[0].id
@@ -63,7 +71,9 @@ const App = function() {
                 </Row>
 
                 <BadgeFlow nodes={nodes}
-                           edges={edges} />
+                           onNodesChange={onNodesChange}
+                           edges={edges}
+                           onEdgesChange={onEdgesChange} />
             </Container>
         </div>
         );

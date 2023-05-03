@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactFlow, { applyEdgeChanges, applyNodeChanges, addEdge } from 'reactflow';
+import ReactFlow, {applyEdgeChanges, applyNodeChanges, addEdge, Controls, ReactFlowProvider} from 'reactflow';
 
 import 'reactflow/dist/style.css';
 import {useCallback} from "react";
@@ -15,11 +15,15 @@ export  function BadgeFlow({nodes, setNodes, edges, setEdges}) {
 
     return (
         <div style={{width: '100vw', height: '100vh'}}>
+            <ReactFlowProvider>
             <ReactFlow nodes={nodes} edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}/>
+            <Controls></Controls>
+            </ReactFlowProvider>
         </div>
+
     );
 
 }

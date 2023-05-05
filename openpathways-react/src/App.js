@@ -7,30 +7,74 @@ import {Container, Row, Col} from 'reactstrap';
 import axios from "axios";
 import {BadgeFlow, MapBadgesToEdges, MapBadgesToNodes} from "./BadgeFlow";
 
-function getBadges() {
-    axios
-        .get("http://localhost:8000/api/badge/")
-        .then((response) => {
-            setBadges(response.data)
-            setNodes(MapBadgesToNodes(badges))
-            setEdges(MapBadgesToEdges(badges))
-        })
-}
-
-function badgeReducer(state, action) {
-
-}
 
 const App = function() {
-    const [badges, badgeDispatch] = useReducer(badgeReducer, [], getBadges);
-
+    const [badges, badgeDispatch] = useReducer(badgeReducer, [{id: 1, name: 'test', description: 'first'}, {id: 2, name: 'second', description: 'secnd'}], getBadges);
     const [nodes, setNodes] = useState(MapBadgesToNodes(badges))
     const [edges, setEdges] = useState(MapBadgesToEdges(badges))
-
     const firstID = badges[0].id
     const [selectedBadgeID, setSelectedBadgeID] = useState(firstID)
-    if(refreshVersion===1) {
-        setRefreshVersion(2)
+
+    function getBadges() {
+        return axios.get("http://localhost:8000/api/badge/")
+            .then((response) => setNodes(MapBadgesToNodes(response)))
+            .then((response) => setEdges(MapBadgesToEdges(response)))['data']
+    }
+
+    function badgeReducer(state, action) {
+
+        switch (action.type) {
+            case 'initial_load': {
+                return getBadges()
+            }
+            case 'saved_new_badge': {
+                axios.post(`http://localhost:8000/api/badge/`, action.badge)
+                return getBadges()
+            }
+            case 'changed_badge': {
+                axios.put(`http://localhost:8000/api/badge/${action.badge.id}/`, action.badge)
+                return getBadges()
+            }
+            case 'deleted_Badge': {
+                if(action.badge.id === 'new') {
+                    return getBadges()
+                }
+                axios.delete(`http://localhost:8000/api/badge/${action.badge.id}/`, action.badge)
+                return getBadges()
+            }
+            case 'added_badge': {
+                return [...state, {name: 'New badge', description: '', id: 'new'}]
+            }
+            case 'modified_badge_name': {
+                return state.map(badge => {
+                    if (badge.id === action.id) {
+                        return {
+                            ...badge,
+                            name: action.e.target.value,
+                        };
+                    } else {
+                        return badge
+                    }
+
+                })
+            }
+            case 'modified_badge_description': {
+                return state.map(badge => {
+                    if (badge.id === action.id) {
+                        return {
+                            ...badge,
+                            description: action.e.target.value,
+                        };
+                    } else {
+                        return badge
+                    }
+
+                })
+            }
+            default: {
+                throw Error('Unknown action: ' + action.type)
+            }
+        }
     }
     return (
         <StrictMode>
@@ -44,9 +88,8 @@ const App = function() {
                             <BadgeForm selectedBadgeID={selectedBadgeID}
                             setSelectedBadgeID={setSelectedBadgeID}
                             badges={badges}
-                            setBadges={setBadges}
-                            refreshVersion={refreshVersion}
-                            setRefreshVersion={setRefreshVersion}/>
+                            badgeDispatch={badgeDispatch}
+                      />
                         </Col>
                     </Row>
                     <Row>

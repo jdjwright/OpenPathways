@@ -29,6 +29,11 @@ export  function BadgeFlow({nodes, setNodes, edges, setEdges}) {
 }
 
 export function MapBadgesToNodes(badges)  {
+    // Check if this is a promise - axios hasn't compelted yet
+    if (typeof (badges === 'object' && typeof badges.then === 'function') || badges === undefined) {
+        return [{id: 1, name: 'default', description: 'first badge'},
+            {id: 2, name: 'default', description: 'first badge'}];
+    }
     return badges.map((badge, index) => {
         let badge_id = 'undef'
         try{
@@ -46,7 +51,10 @@ export function MapBadgesToNodes(badges)  {
 };
 
 export function MapBadgesToEdges(badges) {
-
+    if (typeof (badges === 'object' && typeof badges.then === 'function') || badges === undefined) {
+        return [{id: 1, name: 'default', description: 'first badge'},
+            {id: 2, name: 'default', description: 'first badge'}];
+    }
     let edges = []
     badges.forEach((badge) => {
             // if(badge.child_relations) {
